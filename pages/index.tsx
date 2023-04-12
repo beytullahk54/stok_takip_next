@@ -19,7 +19,7 @@ import Container from '@mui/material/Container';
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
-import {useSession} from "next-auth/react";
+import {useSession,signOut} from "next-auth/react";
 import {redirect} from "next/navigation";
 import {useRouter} from "next/router";
 
@@ -48,7 +48,7 @@ export default function ButtonAppBar() {
     const [urunFiyati,setUrunFiyati] = useState("")
     const [urunStok,setUrunStok] = useState("")
     const [open, setOpen] = React.useState(false);
-    const { data: session } = useSession()
+    const { data: session,status } = useSession()
 
     const router = useRouter()
 
@@ -78,7 +78,7 @@ export default function ButtonAppBar() {
                 "urun_adi": urunAdi,
                 "urun_fiyati": urunFiyati,
                 "urun_stok": urunStok,
-                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9zdG9rdGFraXAtYXBpLnRlc3RcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODEyODU3ODEsImV4cCI6MTY4MTI4OTM4MSwibmJmIjoxNjgxMjg1NzgxLCJqdGkiOiJmWmVYQ0dIN0FPcjA2VXpOIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1bVV5NU1ExJc7t7JW0leMC2SaWExzPsrrkFp2SE-nOU"
+                "token": session?.token?.sub
             }).then(res => {
                 get()
             })
@@ -90,10 +90,10 @@ export default function ButtonAppBar() {
         setOpen(false);
     };
     useEffect(()=>{
-        if(session){
+        console.log(session)
+        if(status == "unauthenticated") router.push('/login')
+        else if(status == "authenticated"){
             get()
-        }else{
-            router.push('/login')
         }
     },[session])
 
@@ -126,7 +126,7 @@ export default function ButtonAppBar() {
                   <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  Kodlooper
+                    Kodlooper <a onClick={()=>signOut()}> Çıkış yap</a>
                 </Typography>
               </Toolbar>
             </AppBar>

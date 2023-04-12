@@ -3,10 +3,19 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import {width} from "@mui/system";
 
+import {signIn,signOut} from "next-auth/react";
+import axios from "axios";
+import {useState} from "react";
 
 const index = ()=>{
+    const [email,setEmail] =useState("test@gmail.com");
+    const [password,setPassword] =useState("test@22");
+
     const login=()=>{
-        alert("başarılı")
+        axios.post("http://stoktakip-api.test/api/auth/login",{email,password}).then(res=>{
+            console.log(res)
+            signIn('credentials', {callbackUrl: '/',access_token:res?.data?.access_token,name:"a",id:res?.data?.access_token})
+        })
     }
     return(
         <>
@@ -30,12 +39,12 @@ const index = ()=>{
 
                     <Box sx={{ mb: 4,ml:5,mr:5, display: 'flex', alignItems: 'center', }}>
 
-                        <TextField id="outlined-basic" fullWidth label="Kullanıcı Adı" variant="outlined" />
+                        <TextField id="outlined-basic" value="test@gmail.com" onChange={evnt=>setEmail(evnt.target.value)} fullWidth label="Kullanıcı Adı" variant="outlined" />
 
                     </Box>
                     <Box sx={{ mb: 4,ml:5,mr:5, display: 'flex', alignItems: 'center', }}>
 
-                        <TextField id="outlined-basic" fullWidth label="Şifre" variant="outlined" />
+                        <TextField id="outlined-basic" value="test@22" onChange={evnt=>setPassword(evnt.target.value)}  fullWidth label="Şifre" variant="outlined" />
 
                     </Box>
                     <Box sx={{ mb: 4,ml:5,mr:5, display: 'flex', alignItems: 'center', }}>
