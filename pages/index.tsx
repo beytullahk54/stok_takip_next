@@ -19,6 +19,9 @@ import Container from '@mui/material/Container';
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
+import {useSession} from "next-auth/react";
+import {redirect} from "next/navigation";
+import {useRouter} from "next/router";
 
 /*
 function createData(
@@ -45,6 +48,9 @@ export default function ButtonAppBar() {
     const [urunFiyati,setUrunFiyati] = useState("")
     const [urunStok,setUrunStok] = useState("")
     const [open, setOpen] = React.useState(false);
+    const { data: session } = useSession()
+
+    const router = useRouter()
 
     const handleClickOpen = () => {
 
@@ -64,7 +70,7 @@ export default function ButtonAppBar() {
     const create = () => {
         if(seciliId != 0 ){
 
-            axios.post("http://stoktakip-api.test/api/stoktakip/update",{"id":seciliId,"urun_adi":urunAdi,"urun_fiyati":urunFiyati,"urun_stok":urunStok,"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9zdG9rdGFraXAtYXBpLnRlc3RcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODEyNTczOTYsImV4cCI6MTY4MTI2MDk5NiwibmJmIjoxNjgxMjU3Mzk2LCJqdGkiOiJHN0FjMG9kb2t6Szd2eDVuIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.-xln6m5pWXvF5M_fYPBX25vfvRPS618x85A1uYhRdcE"}).then(res=>{
+            axios.post("http://stoktakip-api.test/api/stoktakip/update",{"id":seciliId,"urun_adi":urunAdi,"urun_fiyati":urunFiyati,"urun_stok":urunStok,"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9zdG9rdGFraXAtYXBpLnRlc3RcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODEyODU3ODEsImV4cCI6MTY4MTI4OTM4MSwibmJmIjoxNjgxMjg1NzgxLCJqdGkiOiJmWmVYQ0dIN0FPcjA2VXpOIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1bVV5NU1ExJc7t7JW0leMC2SaWExzPsrrkFp2SE-nOU"}).then(res=>{
                 get()
             })
         }else {
@@ -72,7 +78,7 @@ export default function ButtonAppBar() {
                 "urun_adi": urunAdi,
                 "urun_fiyati": urunFiyati,
                 "urun_stok": urunStok,
-                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9zdG9rdGFraXAtYXBpLnRlc3RcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODEyNTczOTYsImV4cCI6MTY4MTI2MDk5NiwibmJmIjoxNjgxMjU3Mzk2LCJqdGkiOiJHN0FjMG9kb2t6Szd2eDVuIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.-xln6m5pWXvF5M_fYPBX25vfvRPS618x85A1uYhRdcE"
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9zdG9rdGFraXAtYXBpLnRlc3RcL2FwaVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODEyODU3ODEsImV4cCI6MTY4MTI4OTM4MSwibmJmIjoxNjgxMjg1NzgxLCJqdGkiOiJmWmVYQ0dIN0FPcjA2VXpOIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1bVV5NU1ExJc7t7JW0leMC2SaWExzPsrrkFp2SE-nOU"
             }).then(res => {
                 get()
             })
@@ -84,8 +90,12 @@ export default function ButtonAppBar() {
         setOpen(false);
     };
     useEffect(()=>{
-        get()
-    },[])
+        if(session){
+            get()
+        }else{
+            router.push('/login')
+        }
+    },[session])
 
     function get(){
         axios.post("http://stoktakip-api.test/api/stoktakip/get").then(res=>{
